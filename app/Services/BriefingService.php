@@ -1,4 +1,40 @@
 <?php
-namespace App\Services;
-use App\Contracts\AiContentGenerator;
-final class BriefingService {public function __construct(private AiContentGenerator $ai){} public function create(array $idea):array{$g=$this->ai->generate($idea);return ['idea_id'=>$idea['id'],'topic'=>$idea['topic'],'audience'=>'Menschen, die eine Brille für Alltag und persönlichen Stil suchen.','tone'=>'Persönlich, freundlich, kompetent; keine unbelegten medizinischen Versprechen.','hook'=>$g['hook'],'caption'=>$g['caption'],'production_shots'=>$g['shots'],'text_overlays'=>$g['overlays'],'cover_idea'=>$g['cover'],'cta'=>$g['cta'],'channel_variants'=>$g['variants'],'effort_minutes'=>['production'=>30,'variants'=>10,'coordination'=>5,'approval'=>10],'ai'=>['provider'=>$g['provider'],'simulated'=>$g['simulated'],'notice'=>$g['notice']]];}}
+
+namespace App\\Services;
+
+use App\\Contracts\\AiContentGenerator;
+
+final class BriefingService
+{
+    public function __construct(private readonly AiContentGenerator $ai) {}
+
+    public function create(array $idea): array
+    {
+        $generated = $this->ai->generate($idea);
+
+        return [
+            'idea_id' => $idea['id'],
+            'topic' => $idea['topic'],
+            'audience' => 'Menschen, die eine Brille für Alltag und persönlichen Stil suchen.',
+            'tone' => 'Persönlich, freundlich, kompetent; keine unbelegten medizinischen Versprechen.',
+            'hook' => $generated['hook'],
+            'caption' => $generated['caption'],
+            'production_shots' => $generated['shots'],
+            'text_overlays' => $generated['overlays'],
+            'cover_idea' => $generated['cover'],
+            'cta' => $generated['cta'],
+            'channel_variants' => $generated['variants'],
+            'effort_minutes' => [
+                'production' => 30,
+                'variants' => 10,
+                'coordination' => 5,
+                'approval' => 10,
+            ],
+            'ai' => [
+                'provider' => $generated['provider'],
+                'simulated' => $generated['simulated'],
+                'notice' => $generated['notice'],
+            ],
+        ];
+    }
+}
