@@ -1,0 +1,3 @@
+<?php
+use Illuminate\\Database\\Migrations\\Migration;use Illuminate\\Database\\Schema\\Blueprint;use Illuminate\\Support\\Facades\\Schema;
+return new class extends Migration{public function up():void{Schema::create('social_posts',function(Blueprint $t){$t->id();$t->string('idea_id',40)->index();$t->string('title',180);$t->longText('body');$t->string('media_reference')->nullable();$t->json('channels');$t->timestamp('scheduled_at')->nullable();$t->string('status',30)->default('draft')->index();$t->unsignedInteger('version')->default(1);$t->string('assigned_person',10);$t->timestamps();});}public function down():void{Schema::dropIfExists('social_posts');}};
