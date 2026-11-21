@@ -1,0 +1,13 @@
+{
+  "week":"2026-W48",
+  "business":"Optiker Lichtblick (fiktiv)",
+  "seasonal_occasion":"Beginn der Winter- und Weihnachtszeit",
+  "audiences":["Brillenträgerinnen und Brillenträger","Menschen auf der Suche nach einer neuen Fassung","Berufstätige mit Bildschirmarbeitsplatz"],
+  "tone":"persönlich, freundlich, kompetent",
+  "people":{"A":90,"B":150},
+  "inspirations":[
+    {"channel":"instagram","source_id":"SRC-IG-001","topic":"Brillenformen und persönlicher Stil","observed_at":"2026-11-18","reach":null,"engagement":null},
+    {"channel":"tiktok","source_id":"SRC-TT-002","topic":"Kurze Behind-the-scenes-Sequenzen","observed_at":"2026-11-19","reach":null,"engagement":null},
+    {"channel":"linkedin","source_id":"SRC-LI-003","topic":"Individuelle Beratung und Servicequalität","observed_at":"2026-11-19","reach":null,"engagement":null}
+  ]
+}
