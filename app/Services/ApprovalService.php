@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\PostApproval;
 use App\Models\SocialPost;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
@@ -22,7 +23,7 @@ final class ApprovalService
         return $post->refresh();
     }
 
-    public function approve(SocialPost $post, string $reviewer)
+    public function approve(SocialPost $post, string $reviewer): PostApproval
     {
         return DB::transaction(function () use ($post, $reviewer) {
             $locked = SocialPost::query()->lockForUpdate()->findOrFail($post->id);
