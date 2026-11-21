@@ -76,10 +76,14 @@ final class PublishingService
             $locked->update(['status' => 'handed_over']);
 
             File::ensureDirectoryExists(storage_path('app/publishing'));
-            File::put(
+            $written = File::put(
                 storage_path('app/publishing/handoff-'.$record->id.'.json'),
                 json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
             );
+
+            if ($written === false) {
+                throw new RuntimeException('Could not persist the simulated publishing payload.');
+            }
 
             return $record;
         });
