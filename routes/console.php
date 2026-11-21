@@ -1,8 +1,8 @@
 <?php
-use App\\Services\\BriefingService;
-use App\\Services\\WeeklyPlanningService;
-use Illuminate\\Support\\Facades\\Artisan;
-use Illuminate\\Support\\Facades\\File;
+use App\Services\BriefingService;
+use App\Services\WeeklyPlanningService;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\File;
 
 Artisan::command('social:plan', function (WeeklyPlanningService $service) {
     $input = json_decode(File::get(base_path('data/weekly-input.json')), true, flags: JSON_THROW_ON_ERROR);
