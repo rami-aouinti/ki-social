@@ -24,8 +24,9 @@ HTTP / Artisan
   +-- BriefingService -------> AiContentGenerator (FakeAiContentGenerator)
   +-- WorkflowController
        +-- ApprovalService --> ContentFingerprint (SHA-256)
-       +-- PublishingService -> PublishingHandoff (unique idempotency key)
-                               -> local JSON payload (SIMULATED)
+       +-- PublishingService -> PublishingGateway (FakePublishingGateway)
+                      -> PublishingHandoff (unique idempotency key)
+                      -> local JSON payload (SIMULATED)
 ```
 
 Controller validieren und delegieren. Services enthalten Anwendungsregeln. Eloquent-Modelle bilden persistente Datensätze ab. Der Fake-Provider ist über den Laravel-Container gebunden und kann durch einen echten Adapter ersetzt werden.
