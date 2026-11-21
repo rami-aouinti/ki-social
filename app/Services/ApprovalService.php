@@ -1,9 +1,9 @@
 <?php
 
-namespace App\\Services;
+namespace App\Services;
 
-use App\\Models\\SocialPost;
-use Illuminate\\Support\\Facades\\DB;
+use App\Models\SocialPost;
+use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
 final class ApprovalService
