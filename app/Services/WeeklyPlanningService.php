@@ -102,7 +102,7 @@ final class WeeklyPlanningService
 
             if ($remainingMinutes < 0) {
                 $warnings[] = sprintf(
-                    'Person %s exceeds capacity by %d minutes. Move or reduce a priority item; availability is never increased silently.',
+                    'Person %s überschreitet das Wochenbudget um %d Minuten. Eine priorisierte Idee verschieben oder reduzieren; verfügbare Zeit wird nicht stillschweigend erhöht.',
                     $person,
                     abs($remainingMinutes)
                 );
@@ -123,7 +123,7 @@ final class WeeklyPlanningService
                 ],
                 $input['inspirations']
             ),
-            'selection_rationale' => 'Three priorities balance advice, education and trust. Two reserves provide flexibility. Sources are inspiration only; missing metrics remain unknown and no trend is asserted.',
+            'selection_rationale' => 'Drei Prioritäten verbinden Beratung, Information und Vertrauen. Zwei Reserven schaffen Flexibilität. Inspirationsquellen sind keine Trendnachweise; fehlende Kennzahlen bleiben unbekannt.',
             'capacity' => $capacity,
             'warnings' => $warnings,
             'assumptions' => [
@@ -137,11 +137,11 @@ final class WeeklyPlanningService
     public function report(array $plan): string
     {
         $lines = [
-            'KI SOCIAL — WEEKLY OVERVIEW',
-            'Week: '.$plan['week'],
-            'Business: '.$plan['business'],
+            'KI SOCIAL — WOCHENÜBERSICHT',
+            'Kalenderwoche: '.$plan['week'],
+            'Unternehmen: '.$plan['business'],
             '',
-            'IDEAS',
+            'BEITRÄGE',
         ];
 
         foreach ($plan['ideas'] as $idea) {
@@ -157,7 +157,7 @@ final class WeeklyPlanningService
         }
 
         $lines[] = '';
-        $lines[] = 'CAPACITY';
+        $lines[] = 'KAPAZITÄT';
 
         foreach ($plan['capacity'] as $person => $capacity) {
             $lines[] = sprintf(
@@ -171,7 +171,7 @@ final class WeeklyPlanningService
         }
 
         $lines[] = '';
-        $lines[] = 'Inspirations are unverified; missing metrics remain unknown.';
+        $lines[] = 'Inspirationsquellen sind nicht verifiziert; fehlende Kennzahlen bleiben unbekannt.';
 
         return implode(PHP_EOL, $lines).PHP_EOL;
     }
