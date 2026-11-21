@@ -1,8 +1,8 @@
 <?php
 
-namespace App\\Services;
+namespace App\Services;
 
-use App\\Contracts\\AiContentGenerator;
+use App\Contracts\AiContentGenerator;
 
 final class BriefingService
 {
