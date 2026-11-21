@@ -41,7 +41,7 @@ cp .env.example .env
 docker compose up --build
 ```
 
-Danach: http://localhost:8000. Beim Start werden Composer-Abhängigkeiten installiert, SQLite angelegt und Migrationen ausgeführt.
+Danach: http://localhost:8000. Beim Start werden Composer-Abhängigkeiten installiert, SQLite angelegt und Migrationen ausgeführt. Der Compose-Fallback-Schlüssel ist ausschließlich für diese lokale Demo gedacht; für jede echte Umgebung muss ein eigener Schlüssel verwendet werden.
 
 Ohne Docker (PHP 8.2+, Composer, SQLite-Erweiterung):
 
@@ -66,6 +66,8 @@ Erzeugte Artefakte:
 - `storage/app/results/weekly-report.txt`
 - `storage/app/results/briefing-IDEA-001.json`
 - `storage/app/publishing/handoff-{id}.json` (erst nach Freigabe und Übergabe)
+
+Synthetische Beispielausgaben liegen unter `examples/weekly-plan.sample.json`, `examples/briefing.sample.json` und `examples/handoff-payload.sample.json`.
 
 ## Workflow-API
 
