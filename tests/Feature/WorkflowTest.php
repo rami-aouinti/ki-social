@@ -1,9 +1,9 @@
 <?php
-namespace Tests\\Feature;
-use App\\Models\\SocialPost;use App\\Services\\ApprovalService;use App\\Services\\PublishingService;use Illuminate\\Foundation\\Testing\\RefreshDatabase;use Tests\\TestCase;
+namespace Tests\Feature;
+use App\Models\SocialPost;use App\Services\ApprovalService;use App\Services\PublishingService;use Illuminate\Foundation\Testing\RefreshDatabase;use Tests\TestCase;
 class WorkflowTest extends TestCase {use RefreshDatabase;private function post(array $overrides=[]):SocialPost{return SocialPost::create(array_merge(['idea_id'=>'IDEA-001','title'=>'Brillenform finden','body'=>'Lass dich beraten.','media_reference'=>'media/demo.mp4','channels'=>['instagram','facebook'],'scheduled_at'=>now()->addDay(),'status'=>'draft','version'=>1,'assigned_person'=>'A'],$overrides));}private function approve(SocialPost $p):void{$s=app(ApprovalService::class);$s->submit($p);$s->approve($p,'Reviewer A');}
  public function test_complete_approved_post_is_handed_off_only_once_on_retry():void{$p=$this->post();$this->approve($p);$s=app(PublishingService::class);$a=$s->handoff($p);$b=$s->handoff($p);$this->assertSame($a->id,$b->id);$this->assertDatabaseCount('publishing_handoffs',1);}
- public function test_missing_approval_blocks_handoff():void{$this->expectException(\\RuntimeException::class);app(PublishingService::class)->handoff($this->post());}
- public function test_missing_media_reference_blocks_submission():void{$this->expectException(\\RuntimeException::class);app(ApprovalService::class)->submit($this->post(['media_reference'=>null]));}
- public function test_text_change_after_approval_requires_new_approval():void{$p=$this->post();$this->approve($p);$p->update(['body'=>'Changed after approval','version'=>2,'status'=>'draft']);$this->expectException(\\RuntimeException::class);app(PublishingService::class)->handoff($p);}
+ public function test_missing_approval_blocks_handoff():void{$this->expectException(\RuntimeException::class);app(PublishingService::class)->handoff($this->post());}
+ public function test_missing_media_reference_blocks_submission():void{$this->expectException(\RuntimeException::class);app(ApprovalService::class)->submit($this->post(['media_reference'=>null]));}
+ public function test_text_change_after_approval_requires_new_approval():void{$p=$this->post();$this->approve($p);$p->update(['body'=>'Changed after approval','version'=>2,'status'=>'draft']);$this->expectException(\RuntimeException::class);app(PublishingService::class)->handoff($p);}
 }
