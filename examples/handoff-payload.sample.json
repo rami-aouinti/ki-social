@@ -1,0 +1,12 @@
+{
+  "post_id": 1,
+  "idea_id": "IDEA-001",
+  "version": 1,
+  "channels": ["instagram", "linkedin"],
+  "scheduled_at": "2026-11-24T10:00:00+01:00",
+  "text": "Lass dich persönlich beraten und entdecke passende Fassungen.",
+  "media_reference": "media/demo-reel-v1.mp4",
+  "approval_fingerprint": "<SHA-256 calculated at runtime>",
+  "idempotency_key": "<SHA-256 calculated at runtime>",
+  "mode": "SIMULATED — no external publication"
+}
