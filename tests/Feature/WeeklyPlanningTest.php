@@ -1,4 +1,4 @@
 <?php
-namespace Tests\\Feature;
-use App\\Services\\WeeklyPlanningService;use Tests\\TestCase;
+namespace Tests\Feature;
+use App\Services\WeeklyPlanningService;use Tests\TestCase;
 class WeeklyPlanningTest extends TestCase {public function test_plan_has_three_priorities_two_reserves_and_capacity_warning():void{$input=json_decode(file_get_contents(base_path('data/weekly-input.json')),true);$input['people']['B']=100;$plan=app(WeeklyPlanningService::class)->generate($input);$this->assertCount(5,$plan['ideas']);$this->assertCount(3,array_filter($plan['ideas'],fn($i)=>$i['priority']==='priority'));$this->assertCount(2,array_filter($plan['ideas'],fn($i)=>$i['priority']==='reserve'));$this->assertTrue($plan['capacity']['B']['warning']);$this->assertNull($plan['inspirations'][0]['metrics']);$this->assertSame('unverified',$plan['inspirations'][0]['trend_status']);}}
