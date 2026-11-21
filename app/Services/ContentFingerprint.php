@@ -1,8 +1,8 @@
 <?php
 
-namespace App\\Services;
+namespace App\Services;
 
-use App\\Models\\SocialPost;
+use App\Models\SocialPost;
 
 final class ContentFingerprint
 {
