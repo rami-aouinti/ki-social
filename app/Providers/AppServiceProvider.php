@@ -1,12 +1,12 @@
 <?php
 
-namespace App\\Providers;
+namespace App\Providers;
 
-use App\\Contracts\\AiContentGenerator;
-use App\\Contracts\\PublishingGateway;
-use App\\Infrastructure\\Ai\\FakeAiContentGenerator;
-use App\\Infrastructure\\Publishing\\FakePublishingGateway;
-use Illuminate\\Support\\ServiceProvider;
+use App\Contracts\AiContentGenerator;
+use App\Contracts\PublishingGateway;
+use App\Infrastructure\Ai\FakeAiContentGenerator;
+use App\Infrastructure\Publishing\FakePublishingGateway;
+use Illuminate\Support\ServiceProvider;
 
 final class AppServiceProvider extends ServiceProvider
 {
