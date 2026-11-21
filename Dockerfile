@@ -1,6 +1,6 @@
 FROM php:8.4-cli
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-RUN apt-get update && apt-get install -y --no-install-recommends libsqlite3-dev unzip git && docker-php-ext-install pdo_sqlite && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends libsqlite3-dev libonig-dev unzip git && docker-php-ext-install pdo_sqlite mbstring && rm -rf /var/lib/apt/lists/*
 WORKDIR /var/www/html
 COPY . .
 RUN composer install --no-interaction --prefer-dist
