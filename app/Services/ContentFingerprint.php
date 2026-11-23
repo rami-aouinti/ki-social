@@ -3,12 +3,16 @@
 namespace App\Services;
 
 use App\Models\SocialPost;
+use JsonException;
 
 /**
  * @group ContentFingerprint
  */
 final class ContentFingerprint
 {
+    /**
+     * @throws JsonException
+     */
     public function for(SocialPost $post): string
     {
         $snapshot = [

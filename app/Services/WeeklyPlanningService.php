@@ -62,7 +62,7 @@ final readonly class WeeklyPlanningService {
         }
 
         $ideas = array_map(
-            fn (array $theme): array => [
+            static fn (array $theme): array => [
                 'id' => (string) $theme['id'],
                 'topic' => (string) $theme['topic'],
                 'priority' => $theme['priority'],
@@ -83,7 +83,7 @@ final readonly class WeeklyPlanningService {
         foreach ($input['people'] as $person => $availableMinutes) {
             $committedIdeas = array_filter(
                 $ideas,
-                fn (array $idea): bool => $idea['owner'] === $person && $idea['priority'] === 'priority'
+                static fn (array $idea): bool => $idea['owner'] === $person && $idea['priority'] === 'priority'
             );
 
             $plannedMinutes = array_sum(array_column($committedIdeas, 'effort'));
