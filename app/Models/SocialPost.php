@@ -22,7 +22,11 @@ class SocialPost extends Model {
 
     protected function casts():array
     {
-        return ['channels'=>'array','scheduled_at'=>'datetime','version'=>'integer'];
+        return [
+            'channels'=>'array',
+            'scheduled_at'=>'datetime',
+            'version'=>'integer'
+        ];
     }
 
     public function approvals()
