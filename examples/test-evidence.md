@@ -11,7 +11,7 @@ This file documents the automated acceptance scenarios and how to reproduce them
 | Missing media blocks review | test_missing_media_reference_blocks_submission_for_review | Exact validation error; post stays draft; no approvals or handoffs. |
 | Changed text requires new approval | test_text_change_after_approval_requires_new_approval | Old approval is stale; no handoff is created. |
 | Gateway rejection is not success | test_rejected_gateway_does_not_mark_post_as_handed_over | RuntimeException; post remains approved; no handoff row. |
-| Capacity overrun is visible | test_plan_has_three_priorities_two_reserves_and_capacity_warning | B remains at 100 available minutes; 135 planned minutes; warning and 35-minute overrun. |
+| Capacity overrun is visible | test_plan_has_three_priorities_two_reserves_and_capacity_warning | B remains at 100 available minutes; 135 planned minutes; warning and 35-minute overrun. |\n| Topics come from structured input | test_topics_are_taken_from_the_structured_input | Changing the first input topic changes the generated idea topic. |
 | Text report is useful for weekly review | test_text_report_contains_schedule_status_sources_and_capacity_warnings | Report contains date, status, source ID, inspiration disclaimer and reserve assumption. |
 
 ## Run locally
