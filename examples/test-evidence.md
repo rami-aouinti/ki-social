@@ -1,13 +1,37 @@
-# Test evidence — expected scenarios
+# Test evidence
 
-This matrix describes the expected assertions encoded in PHPUnit. It is not a claim that tests have already been executed in the remote editing session. Run the suite locally and attach the actual terminal output or screenshots before submission.
+This file documents the automated acceptance scenarios and how to reproduce them. It does not replace the actual test output from the final submission environment.
 
-| Case | Input | Expected result |
+## Automated scenarios
+
+| Requirement | Test | Expected assertion |
 |---|---|---|
-| 1. Retry | Complete post, current approval, handoff twice | One publishing_handoffs row; both calls return same ID |
-| 2. Missing approval | Draft post, handoff requested | RuntimeException; no handoff row |
-| 2b. Missing media | Media reference null, submit requested | RuntimeException; no approval |
-| 3. Edited content | Approve v1, change body and version to v2/draft, handoff | RuntimeException; new approval required |
-| 4. Capacity | Person B has 100 available minutes | Priority workload 135 minutes; warning of 35 minutes; availability remains 100 |
+| Complete approved post is handed over exactly once | test_complete_approved_post_is_handed_off_only_once_on_retry | Both calls return the same handoff ID; exactly one row exists; status is handed_over. |
+| Missing approval blocks handoff | test_missing_approval_blocks_handoff_without_creating_a_record | RuntimeException; no handoff row. |
+| Missing media blocks review | test_missing_media_reference_blocks_submission_for_review | Exact validation error; post stays draft; no approvals or handoffs. |
+| Changed text requires new approval | test_text_change_after_approval_requires_new_approval | Old approval is stale; no handoff is created. |
+| Gateway rejection is not success | test_rejected_gateway_does_not_mark_post_as_handed_over | RuntimeException; post remains approved; no handoff row. |
+| Capacity overrun is visible | test_plan_has_three_priorities_two_reserves_and_capacity_warning | B remains at 100 available minutes; 135 planned minutes; warning and 35-minute overrun. |
+| Text report is useful for weekly review | test_text_report_contains_schedule_status_sources_and_capacity_warnings | Report contains date, status, source ID, inspiration disclaimer and reserve assumption. |
 
-Run: `php artisan test`.
+## Run locally
+
+    composer validate --no-check-publish
+    composer install
+    cp .env.example .env
+    php artisan key:generate
+    touch database/database.sqlite
+    php artisan migrate --force
+    php artisan test
+
+## Final submission evidence
+
+After running the commands above on the final commit, paste the real terminal summary here or attach a screenshot. Do not mark tests as passed based only on the existence of test methods.
+
+- Commit tested: fill in after final run.
+- PHP version: fill in from php -v.
+- Test command: php artisan test.
+- Actual result: fill in with the real PHPUnit summary.
+- CI run for the final pull request: add the GitHub Actions URL after it completes.
+
+The repository had a successful CI run on the earlier main-branch commit e87734f. That historical run is not evidence for the changes in this branch.
