@@ -9,7 +9,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 use RuntimeException;
 
-final class PublishingService
+/**
+ * @group PublishingService
+ */
+final readonly class PublishingService
 {
     public function __construct(
         private readonly ContentFingerprint $fingerprint,

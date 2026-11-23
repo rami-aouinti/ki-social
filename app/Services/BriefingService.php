@@ -4,9 +4,12 @@ namespace App\Services;
 
 use App\Contracts\AiContentGenerator;
 
-final class BriefingService
+/**
+ * @group BriefingService
+ */
+final readonly class BriefingService
 {
-    public function __construct(private readonly AiContentGenerator $ai) {}
+    public function __construct(private AiContentGenerator $ai) {}
 
     public function create(array $idea): array
     {

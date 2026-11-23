@@ -7,9 +7,12 @@ use App\Models\SocialPost;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
-final class ApprovalService
+/**
+ * @group ApprovalService
+ */
+final readonly class ApprovalService
 {
-    public function __construct(private readonly ContentFingerprint $fingerprint) {}
+    public function __construct(private ContentFingerprint $fingerprint) {}
 
     public function submit(SocialPost $post): SocialPost
     {

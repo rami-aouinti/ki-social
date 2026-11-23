@@ -8,6 +8,9 @@ use App\Infrastructure\Ai\FakeAiContentGenerator;
 use App\Infrastructure\Publishing\FakePublishingGateway;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * @group AppServiceProvider
+ */
 final class AppServiceProvider extends ServiceProvider
 {
     public function register(): void

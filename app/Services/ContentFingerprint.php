@@ -4,6 +4,9 @@ namespace App\Services;
 
 use App\Models\SocialPost;
 
+/**
+ * @group ContentFingerprint
+ */
 final class ContentFingerprint
 {
     public function for(SocialPost $post): string
