@@ -10,6 +10,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 
+/**
+ * @group Workflow
+ */
 final class WorkflowController
 {
     public function store(Request $request): JsonResponse
