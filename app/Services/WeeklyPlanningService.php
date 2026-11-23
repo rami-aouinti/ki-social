@@ -4,8 +4,7 @@ namespace App\Services;
 
 use InvalidArgumentException;
 
-final class WeeklyPlanningService
-{
+final class WeeklyPlanningService {
     public function generate(array $input): array
     {
         foreach (['week', 'people', 'inspirations', 'themes'] as $required) {

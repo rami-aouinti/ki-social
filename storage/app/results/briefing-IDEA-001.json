@@ -1,0 +1,41 @@
+{
+    "idea_id": "IDEA-001",
+    "topic": "Welche Brillenform passt zu deinem Gesicht?",
+    "audience": "Menschen, die eine Brille für Alltag und persönlichen Stil suchen.",
+    "tone": "Persönlich, freundlich, kompetent; keine unbelegten medizinischen Versprechen.",
+    "hook": "Deine Brille sollte zu dir passen – und zu deinem Alltag.",
+    "caption": "Die richtige Fassung verbindet Sehkomfort und persönlichen Stil. Lass dich persönlich beraten.",
+    "production_shots": [
+        "Begrüssung vor neutralem Hintergrund",
+        "Drei Fassungsformen als Nahaufnahme",
+        "Zwei Modelle beim Anprobieren zeigen (nur mit Einverständnis)",
+        "Einladung zur persönlichen Beratung"
+    ],
+    "text_overlays": [
+        "Finde deine passende Fassung",
+        "Form · Komfort · Persönlichkeit"
+    ],
+    "cover_idea": "Nahaufnahme einer Brille vor hellem Hintergrund.",
+    "cta": "Termin vereinbaren: https:\/\/example.com\/termin",
+    "channel_variants": {
+        "instagram": {
+            "format": "Reel 9:16, 20–30 Sekunden",
+            "text": "Welche Brille passt zu dir? Entdecke verschiedene Formen und lass dich persönlich beraten."
+        },
+        "linkedin": {
+            "format": "Bildbeitrag mit fachlichem Kurztext",
+            "text": "Eine Brillenfassung verbindet Sehkomfort und persönlichen Stil. Individuelle Beratung bringt Form und Alltagstauglichkeit zusammen."
+        }
+    },
+    "effort_minutes": {
+        "production": 30,
+        "variants": 10,
+        "coordination": 5,
+        "approval": 10
+    },
+    "ai": {
+        "provider": "fake",
+        "simulated": true,
+        "notice": "Feste synthetische Testantwort; keine echte KI-Anfrage."
+    }
+}

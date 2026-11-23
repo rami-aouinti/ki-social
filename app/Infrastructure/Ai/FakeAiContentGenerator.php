@@ -1,7 +1,42 @@
 <?php
+
 namespace App\Infrastructure\Ai;
+
 use App\Contracts\AiContentGenerator;
-/** Deterministic fake provider. Replace the container binding to integrate a real LLM. */
+
+/**
+ * Deterministic fake provider. Replace the container binding to integrate a real LLM.
+ */
 final class FakeAiContentGenerator implements AiContentGenerator {
- public function generate(array $idea):array{return ['provider'=>'fake','simulated'=>true,'hook'=>'Deine Brille sollte zu dir passen – und zu deinem Alltag.','caption'=>'Die richtige Fassung verbindet Sehkomfort und persönlichen Stil. Lass dich persönlich beraten.','shots'=>['Begrüssung vor neutralem Hintergrund','Drei Fassungsformen als Nahaufnahme','Zwei Modelle beim Anprobieren zeigen (nur mit Einverständnis)','Einladung zur persönlichen Beratung'],'overlays'=>['Finde deine passende Fassung','Form · Komfort · Persönlichkeit'],'cover'=>'Nahaufnahme einer Brille vor hellem Hintergrund.','cta'=>'Termin vereinbaren: https://example.com/termin','variants'=>['instagram'=>['format'=>'Reel 9:16, 20–30 Sekunden','text'=>'Welche Brille passt zu dir? Entdecke verschiedene Formen und lass dich persönlich beraten.'],'linkedin'=>['format'=>'Bildbeitrag mit fachlichem Kurztext','text'=>'Eine Brillenfassung verbindet Sehkomfort und persönlichen Stil. Individuelle Beratung bringt Form und Alltagstauglichkeit zusammen.']],'notice'=>'Feste synthetische Testantwort; keine echte KI-Anfrage.'];}
+ public function generate(array $idea):array
+ {
+     return [
+         'provider'=>'fake',
+         'simulated'=>true,
+         'hook'=>'Deine Brille sollte zu dir passen – und zu deinem Alltag.',
+         'caption'=>'Die richtige Fassung verbindet Sehkomfort und persönlichen Stil. Lass dich persönlich beraten.',
+         'shots'=>['Begrüssung vor neutralem Hintergrund',
+             'Drei Fassungsformen als Nahaufnahme',
+             'Zwei Modelle beim Anprobieren zeigen (nur mit Einverständnis)',
+             'Einladung zur persönlichen Beratung'],
+         'overlays'=>['Finde deine passende Fassung',
+             'Form · Komfort · Persönlichkeit'],
+         'cover'=>'Nahaufnahme einer Brille vor hellem Hintergrund.',
+         'cta'=>'Termin vereinbaren: https://example.com/termin',
+         'variants'=>
+             [
+                 'instagram'=>
+                     [
+                         'format'=>'Reel 9:16,20–30 Sekunden',
+                         'text'=>'Welche Brille passt zu dir? Entdecke verschiedene Formen und lass dich persönlich beraten.'
+                     ],
+                 'linkedin'=>
+                     [
+                         'format'=>'Bildbeitrag mit fachlichem Kurztext',
+                         'text'=>'Eine Brillenfassung verbindet Sehkomfort und persönlichen Stil. Individuelle Beratung bringt Form und Alltagstauglichkeit zusammen.'
+                     ]
+             ],
+         'notice'=>'Feste synthetische Testantwort; keine echte KI-Anfrage.'
+     ];
+ }
 }
