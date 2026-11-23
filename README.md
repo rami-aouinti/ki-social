@@ -1,136 +1,192 @@
 # KI Social — KI-gestützter Social-Media-Workflow
 
-**Assessment prototype · fiktiver Optiker · keine externen Dienste**
+**Assessment-Prototyp · fiktiver Optiker · keine externen Dienste**
 
 ## Ziel
 
-Ein nachvollziehbarer Laravel-Prototyp für Wochenplanung, Content-Briefing, menschliche Freigabe und simulierte Übergabe an eine Publishing-Schnittstelle. Ausschließlich synthetische Daten und example.com-Adressen werden verwendet.
+Ein kleiner, nachvollziehbarer Laravel-Prototyp für Wochenplanung, Content-Briefing, menschliche Freigabe und die simulierte Übergabe von Social-Media-Beiträgen. Verwendet werden ausschließlich synthetische Daten und `example.com`-Adressen.
 
-## Technologieentscheidungen
+## Technologie und Architektur
 
-- PHP 8.4 / Laravel 12: schnelle, testbare Umsetzung mit klarer Trennung von HTTP, Anwendung und Infrastruktur.
-- SQLite: keine zusätzliche Datenbankinstallation; für den Prototyp ausreichend.
-- Contract-orientierte Services: Der AI-Provider ist über AiContentGenerator austauschbar.
-- Deterministischer Fake-AI-Provider: reproduzierbare Antworten ohne API-Key, Kosten oder externe Datenübertragung.
-- SHA-256-Freigabefingerprint: Freigabe gilt nur für die exakte Version einschließlich Titel, Text, Medienreferenz, Kanälen und Termin.
-- Datenbank-Idempotenz: Ein eindeutiger Schlüssel verhindert doppelte lokale Übergabe-Datensätze bei Wiederholungsaufrufen.
-- Docker Compose: reproduzierbarer lokaler Start; kein produktives Hosting.
+- **PHP 8.4 / Laravel 12**: schnelle Umsetzung mit testbaren Anwendungsservices.
+- **SQLite**: keine zusätzliche Datenbankinstallation für die lokale Demo.
+- **Contract-orientierte Adapter**: `AiContentGenerator` und `PublishingGateway` trennen Anwendungslogik von externen Diensten.
+- **Fake AI Provider**: deterministische Testantworten ohne API-Key, Kosten oder externe Requests.
+- **SHA-256-Fingerprint**: Freigabe gilt nur für die exakte Version von Titel, Text, Medienreferenz, Kanälen und Termin.
+- **Idempotency Key**: Wiederholte Übergabe derselben freigegebenen Version erzeugt keinen zweiten lokalen Übergabedatensatz.
+- **Docker Compose**: reproduzierbarer lokaler Start.
 
-## Architektur
+Vereinfachter Ablauf:
 
-    HTTP / Artisan
-      +-- WeeklyPlanningService --> weekly-plan.json + weekly-report.txt
-      +-- BriefingService -------> AiContentGenerator (FakeAiContentGenerator)
-      +-- WorkflowController
-           +-- ApprovalService --> ContentFingerprint (SHA-256)
-           +-- PublishingService -> PublishingGateway (FakePublishingGateway)
-                          -> PublishingHandoff (unique idempotency key)
-                          -> local JSON payload (SIMULATED)
+```text
+weekly-input.json
+      |
+      v
+WeeklyPlanningService ---> weekly-plan.json + weekly-report.txt
+      |
+      v
+BriefingService ---------> AiContentGenerator (Fake)
+      |
+      v
+WorkflowController
+      |-- ApprovalService -> SHA-256-Freigabe
+      |-- PublishingService -> PublishingGateway (Fake)
+                               |
+                               +--> lokaler Handoff-Datensatz
+                               +--> lokales JSON-Payload
+```
 
-Controller validieren Eingaben und delegieren. Services enthalten Anwendungsregeln. Eloquent-Modelle bilden persistente Datensätze ab. Der Fake-Provider ist über den Laravel-Container gebunden und kann durch einen echten Adapter ersetzt werden.
+Controller übernehmen HTTP-Validierung und delegieren an Services. Die fachlichen Regeln liegen in den Services; die Fake-Adapter sind über Laravel-Contracts austauschbar.
 
 ## Start
 
 Voraussetzungen: Docker und Docker Compose.
 
-    git clone https://github.com/rami-aouinti/ki-social.git
-    cd ki-social
-    cp .env.example .env
-    docker compose up --build
+```bash
+git clone https://github.com/rami-aouinti/ki-social.git
+cd ki-social
+cp .env.example .env
+docker compose up --build
+```
 
-Danach: http://localhost:8000. Beim Start werden Composer-Abhängigkeiten installiert, SQLite angelegt und Migrationen ausgeführt. Der Compose-Fallback-Schlüssel ist ausschließlich für diese lokale Demo gedacht.
+Die Anwendung ist danach unter http://localhost:8000 erreichbar. Docker installiert Composer-Abhängigkeiten, erstellt die SQLite-Datei und führt Migrationen aus. Der in Compose hinterlegte Fallback-App-Key ist nur für diese lokale Demo gedacht.
 
-Ohne Docker (PHP 8.2+, Composer, SQLite-Erweiterung):
+Ohne Docker (PHP 8.2+, Composer und SQLite-Erweiterung):
 
-    composer install
-    cp .env.example .env
-    php artisan key:generate
-    touch database/database.sqlite
-    php artisan migrate
-    php artisan serve
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+touch database/database.sqlite
+php artisan migrate
+php artisan serve
+```
 
-## Demo
+## Drei reproduzierbare Beispiele
 
-    docker compose exec app php artisan social:plan
-    docker compose exec app php artisan social:briefing IDEA-001
+### 1. Wochenplanung
 
-Erzeugte Artefakte:
-- storage/app/results/weekly-plan.json
-- storage/app/results/weekly-report.txt
-- storage/app/results/briefing-IDEA-001.json
-- storage/app/publishing/handoff-{id}.json (erst nach Freigabe und Übergabe)
+Die Eingabe liegt in `data/weekly-input.json`. Die fünf Themen werden aus dieser Datei gelesen und validiert: drei Prioritäten und zwei Reserven. Die Kapazitätsrechnung berücksichtigt zunächst nur die drei fest eingeplanten Prioritäten.
 
-Synthetische Beispielausgaben liegen unter examples/weekly-plan.sample.json, examples/briefing.sample.json und examples/handoff-payload.sample.json.
+```bash
+docker compose exec app php artisan social:plan
+```
 
-## Workflow-API
+Ohne Docker: `php artisan social:plan`.
 
-Alle Beispiele sind synthetisch.
+Erzeugt:
 
-1. Entwurf anlegen: POST /api/posts mit idea_id, title, body, media_reference, channels, scheduled_at und assigned_person.
-2. Prüfung anfordern: POST /api/posts/{id}/submit.
-3. Freigeben: POST /api/posts/{id}/approve mit reviewer.
-4. Simuliert übergeben: POST /api/posts/{id}/handoff.
-5. Ändern: POST /api/posts/{id}/edit. Jede Änderung erhöht die Version und setzt den Status auf draft; eine neue Prüfung und Freigabe sind erforderlich.
+- `storage/app/results/weekly-plan.json`
+- `storage/app/results/weekly-report.txt`
 
-Die Übergabe speichert ausschließlich lokales JSON. Es gibt keine Instagram-, Facebook-, TikTok- oder LinkedIn-Anbindung. Der Reviewer ist im Prototyp nur ein übermittelter Anzeigename, keine authentifizierte Benutzeridentität.
+Beispielausgaben im Repository:
+
+- [examples/weekly-plan.sample.json](examples/weekly-plan.sample.json)
+- [examples/weekly-report.sample.txt](examples/weekly-report.sample.txt)
+
+### 2. Content-Briefing
+
+Das Briefing wird aus einer Idee des zuvor erzeugten Wochenplans erstellt:
+
+```bash
+docker compose exec app php artisan social:briefing IDEA-001
+```
+
+Ohne Docker: `php artisan social:briefing IDEA-001`.
+
+Erzeugt `storage/app/results/briefing-IDEA-001.json`. Das Briefing enthält Hook, Caption, Zielgruppe, Tonalität, Produktionsshots, Text-Overlays, Cover-Idee, CTA, zwei unterschiedliche Kanalvarianten und Aufwand. Die KI-Antwort ist ausdrücklich simuliert.
+
+Beispiel: [examples/briefing.sample.json](examples/briefing.sample.json).
+
+### 3. Freigabe und simulierte Übergabe
+
+Die API bildet den Workflow ab:
+
+1. `POST /api/posts` — Entwurf mit Titel, Text, Medienreferenz, Kanälen, Termin und zuständiger Person anlegen.
+2. `POST /api/posts/{id}/submit` — vollständigen Entwurf zur Prüfung einreichen.
+3. `POST /api/posts/{id}/approve` — aktuelle Version mit Reviewer-Anzeigename freigeben.
+4. `POST /api/posts/{id}/handoff` — freigegebenen Inhalt an das Fake-Gateway übergeben.
+5. Derselbe Handoff-Aufruf kann wiederholt werden; der vorhandene Übergabedatensatz wird zurückgegeben.
+
+Beispiel für einen lokalen Durchlauf (die ID aus der Antwort des ersten Aufrufs in den folgenden URLs einsetzen):
+
+```bash
+curl -X POST http://localhost:8000/api/posts \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "idea_id":"IDEA-001",
+    "title":"Welche Brillenform passt zu dir?",
+    "body":"Die richtige Fassung verbindet Sehkomfort und persönlichen Stil. Lass dich persönlich beraten.",
+    "media_reference":"media/demo-reel-v1.mp4",
+    "channels":["instagram","linkedin"],
+    "scheduled_at":"2026-11-24T10:00:00+01:00",
+    "assigned_person":"A"
+  }'
+
+# <id> durch die zurückgegebene Post-ID ersetzen:
+curl -X POST http://localhost:8000/api/posts/<id>/submit
+curl -X POST http://localhost:8000/api/posts/<id>/approve \
+  -H 'Content-Type: application/json' \
+  -d '{"reviewer":"Demo Reviewer"}'
+curl -X POST http://localhost:8000/api/posts/<id>/handoff
+```
+
+Die Übergabe erzeugt lokal `storage/app/publishing/handoff-{id}.json`. Das Payload-Beispiel steht unter [examples/handoff-payload.sample.json](examples/handoff-payload.sample.json).
+
+**Wichtig:** Es gibt keine Instagram-, Facebook-, TikTok- oder LinkedIn-Anbindung und keine echte Veröffentlichung. Die Medienreferenz ist ein synthetischer String, kein tatsächlicher Upload. Der Reviewer ist ein übermittelter Anzeigename, keine authentifizierte Benutzeridentität.
 
 ## Wochenplanung und Kapazität
 
-Die synthetischen Eingaben enthalten 90 Minuten für A und 150 Minuten für B. Aufwand umfasst Produktion, Varianten, Abstimmung und Freigabe. Nur die drei priorisierten Ideen belasten zunächst das feste Wochenbudget; zwei Reserven bleiben unverplant. Ein negatives Restbudget erzeugt eine Warnung. Verfügbare Zeit wird nie automatisch erhöht.
+Die Beispieldaten enthalten 90 Minuten für Person A und 150 Minuten für Person B. Für die drei priorisierten Ideen sind 55 Minuten für A sowie 135 Minuten für B eingeplant. Damit bleiben A 35 Minuten und B 15 Minuten. Die beiden Reservethemen werden separat ausgewiesen und belasten das feste Wochenbudget zunächst nicht.
 
-Die fünf Themen, Prioritäten, Kanäle, Formate, Verantwortlichen, Termine, Aufwände und Begründungen stehen als strukturierte Daten in data/weekly-input.json. WeeklyPlanningService validiert die fünf Einträge (drei Prioritäten, zwei Reserven), übernimmt sie in den Plan und berechnet die Kapazität daraus. Damit ist die Auswahl deterministisch und konfigurierbar, aber noch keine automatische KI-Rangfolge. Inspirationsquellen sind Kontext und keine Trendnachweise.
+Die Themen, Prioritäten, Kanäle, Formate, Verantwortlichen, Termine, Aufwände und Begründungen kommen aus `data/weekly-input.json`. Die Auswahl ist damit deterministisch und konfigurierbar, aber keine automatisch erzeugte KI-Rangfolge. Eine Budgetüberschreitung führt zu einer sichtbaren Warnung; verfügbare Zeit wird nicht stillschweigend erhöht.
+
+Inspirationsquellen dienen nur als Kontext. Fehlende Kennzahlen bleiben `null`; die Quellen werden nicht als verifizierte Trends dargestellt.
 
 ## Tests
 
-    composer validate --no-check-publish
-    php artisan test
+```bash
+composer validate --no-check-publish
+php artisan test
+```
 
-Abgedeckt werden:
-- vollständiger freigegebener Inhalt wird bei erneutem Übergabeaufruf nur einmal gespeichert;
-- fehlende Freigabe verhindert Übergabe;
-- fehlende Medienreferenz verhindert bereits die Einreichung zur Prüfung;
-- Textänderung nach Freigabe entwertet die alte Freigabe;
-- abgelehnte Übergabe durch das Gateway wird nicht als erfolgreich gespeichert;
-- Wochenplan übernimmt die Themen aus der Eingabedatei, enthält drei Prioritäten und zwei Reserven; Budgetüberschreitung wird sichtbar;
-- Textbericht enthält Termine, Status, Begründungen, Quellen und Kapazitätshinweise;
-- fehlende Inspirationskennzahlen bleiben unbekannt, Quellen sind als unbestätigt markiert.
+Die Tests prüfen insbesondere:
 
-Siehe examples/test-evidence.md für die Testmatrix und die Anleitung zum Festhalten der tatsächlichen Testausgabe.
+- wiederholte Übergabe erzeugt keinen doppelten Handoff;
+- fehlende Freigabe blockiert die Übergabe;
+- fehlende Medienreferenz blockiert bereits die Einreichung zur Prüfung;
+- Textänderung nach Freigabe entwertet die vorherige Freigabe;
+- ein vom Gateway abgelehnter Handoff wird nicht als erfolgreich gespeichert;
+- der Plan übernimmt Themen aus der strukturierten Eingabe und macht Budgetüberschreitungen sichtbar.
 
-## Status: implementiert, simuliert, konzipiert
+Die Testmatrix und der Platz für die tatsächlichen lokalen Testergebnisse stehen in [examples/test-evidence.md](examples/test-evidence.md). CI-Status: [GitHub Actions](https://github.com/rami-aouinti/ki-social/actions).
+
+## Implementiert, simuliert und bewusst ausgeschlossen
 
 | Bereich | Status |
 |---|---|
-| 5 Ideen, 3 Prioritäten, 2 Reserven | Implementiert; Themenauswahl derzeit deterministisch |
-| Kapazitätsprüfung und Warnung | Implementiert |
-| Vollständiges Briefing und zwei Kanalvarianten | Implementiert; KI-Antwort simuliert |
-| Draft / Pending Review / Approved / Handed Over | Implementiert |
+| Fünf Ideen: drei Prioritäten und zwei Reserven | Implementiert; deterministische Auswahl aus JSON |
+| Kapazitätsprüfung und Warnungen | Implementiert |
+| Briefing mit zwei Kanalvarianten | Implementiert; Inhalt vom Fake-AI-Provider |
+| Entwurf, Prüfung, Freigabe und Übergabe | Implementiert |
 | Versionierung und SHA-256-Fingerprint | Implementiert |
-| Publishing-Payload und Idempotenz | Implementiert; lokale Übergabe simuliert |
-| Tatsächliche Social-Media-Veröffentlichung | Ausgeschlossen |
-| E-Mail-Versand | Nicht implementiert; TXT-Bericht lokal erzeugt |
-| Analytics, UTM, ROI, Kommentarentwürfe | Nur konzipiert |
-| Scheduler, Secret Manager, Monitoring | Nur konzipiert |
+| Idempotente lokale Übergabe | Implementiert |
+| Social-Media-Veröffentlichung | Nicht implementiert |
+| E-Mail-Versand | Nicht implementiert |
+| Analytics, UTM, ROI und Kommentarentwürfe | Nur als mögliche Erweiterungen beschrieben |
+| Scheduler, Secret Manager und produktives Monitoring | Nicht implementiert |
 
-## Ausbauideen
-
-- Messung: UTM je Kanal/Kampagne; Events mit eindeutiger Event-ID; fehlende Werte sichtbar lassen; Deduplizierung über Event-ID. Attribution ist kein Kausalitätsnachweis.
-- Wirtschaftlichkeit: Umsatz und Deckungsbeitrag trennen. Kosten je Anfrage/Kunde nur bei ausreichender Datenbasis; bei Nenner 0 keine Quote.
-- Kommentare: Antwortentwürfe mit menschlicher Prüfung. Beschwerden, sensible oder unklare Anliegen eskalieren; keine automatische Antwort.
-- Betrieb: Laravel Scheduler, verschlüsselte Secret-Verwaltung, strukturierte Logs, Fehlerbenachrichtigung und manueller Ersatzweg.
-- Kapazität: Produktionsaufwand getrennt von tatsächlich verfügbaren Beratungsterminen behandeln.
-
-## Annahmen und technische Grenzen
+## Annahmen und Grenzen
 
 - Alle Personen, Inhalte, Kennzahlen, Termine und Quellenkennungen sind fiktiv.
 - Inspirationsfunde sind keine Trendnachweise; fehlende Kennzahlen werden nicht erfunden.
-- Medienreferenzen sind synthetische Strings, keine echten Uploads oder Datei-Scans.
-- Publishing nimmt nur lokales JSON entgegen.
-- Der Prototyp ruft das Gateway innerhalb einer Datenbanktransaktion auf. Das ist für den lokalen Fake-Adapter ausreichend, aber kein belastbares Muster für einen externen Dienst: Ein externer Dienst könnte die Anfrage akzeptieren, während anschließend der lokale Datenbank-Commit scheitert. Vor einem echten Adapter wäre eine Outbox mit separatem Worker, Retry-Status und Überwachung nötig. Der eindeutige Schlüssel schützt gegen doppelte lokale Datensätze, ersetzt aber keine verteilte Transaktionsstrategie.
+- Es gibt keine echten Medienuploads oder Datei-Scans.
+- Das Fake-Publishing-Gateway speichert nur ein lokales JSON-Payload.
+- Der Prototyp ruft das Gateway innerhalb einer Datenbanktransaktion auf. Für den lokalen Fake-Adapter ist das ausreichend, aber nicht robust für einen externen Dienst: Ein externer Dienst könnte die Anfrage annehmen, während der lokale Datenbank-Commit anschließend scheitert. Vor einer echten Integration wäre eine Outbox mit separatem Worker, Retry-Status und Überwachung sinnvoll. Der Idempotency Key verhindert doppelte lokale Datensätze, ersetzt aber keine verteilte Transaktionsstrategie.
 - Die Demo ist bewusst klein und kein produktionsreifes Social-Media-Management-System.
 
 ## KI-Werkzeuge und Bearbeitungszeit
 
-ChatGPT wurde zur Anforderungsstrukturierung, Architekturabwägung, Erstellung von Codeentwürfen und Review-Checklisten verwendet. Der KI-Provider im Prototyp ist ein deterministischer Fake und führt keine externen Requests aus.
+ChatGPT wurde zur Strukturierung der Anforderungen, für Architekturüberlegungen, Codeentwürfe und Review-Checklisten verwendet. Der KI-Provider innerhalb der Anwendung ist ein deterministischer Fake und führt keine externen KI-Requests aus.
 
-Tatsächliche Bearbeitungszeit: Bitte vor Abgabe selbst anhand deiner tatsächlich aufgewendeten Zeit eintragen. Dieser Wert wird bewusst nicht geschätzt oder erfunden.
+**Tatsächliche Bearbeitungszeit:** Bitte vor der Abgabe selbst anhand deiner tatsächlich aufgewendeten Zeit eintragen. Dieser Wert wird nicht geschätzt oder erfunden.
