@@ -8,7 +8,7 @@ final class WeeklyPlanningService
 {
     public function generate(array $input): array
     {
-        foreach (['week', 'people', 'inspirations'] as $required) {
+        foreach (['week', 'people', 'inspirations', 'themes'] as $required) {
             if (!isset($input[$required])) {
                 throw new InvalidArgumentException("Missing input: {$required}");
             }
@@ -18,68 +18,62 @@ final class WeeklyPlanningService
             throw new InvalidArgumentException('At least three inspirations are required.');
         }
 
-        $ideas = [
-            [
-                'id' => 'IDEA-001',
-                'topic' => 'Welche Brillenform passt zu deinem Gesicht?',
-                'priority' => 'priority',
-                'channels' => ['instagram', 'linkedin'],
-                'format' => 'Short video + professional post',
-                'owner' => 'A',
-                'date' => '2026-11-24',
-                'effort' => 55,
+        if (count($input['themes']) !== 5) {
+            throw new InvalidArgumentException('Exactly five themes are required: three priorities and two reserves.');
+        }
+
+        foreach ($input['themes'] as $index => $theme) {
+            foreach (['id', 'topic', 'priority', 'channels', 'format', 'owner', 'date', 'effort', 'reason'] as $field) {
+                if (!array_key_exists($field, $theme)) {
+                    throw new InvalidArgumentException("Theme {$index} is missing field: {$field}");
+                }
+            }
+
+            if (!in_array($theme['priority'], ['priority', 'reserve'], true)) {
+                throw new InvalidArgumentException("Theme {$index} has an invalid priority.");
+            }
+
+            if (!isset($input['people'][$theme['owner']])) {
+                throw new InvalidArgumentException("Theme {$index} has an owner without a capacity entry.");
+            }
+
+            if (!is_array($theme['channels']) || $theme['channels'] === []) {
+                throw new InvalidArgumentException("Theme {$index} must have at least one channel.");
+            }
+
+            if (!is_numeric($theme['effort']) || (int) $theme['effort'] < 0) {
+                throw new InvalidArgumentException("Theme {$index} has an invalid effort estimate.");
+            }
+        }
+
+        $priorityCount = count(array_filter(
+            $input['themes'],
+            fn (array $theme): bool => $theme['priority'] === 'priority'
+        ));
+        $reserveCount = count(array_filter(
+            $input['themes'],
+            fn (array $theme): bool => $theme['priority'] === 'reserve'
+        ));
+
+        if ($priorityCount !== 3 || $reserveCount !== 2) {
+            throw new InvalidArgumentException('The plan must contain three priorities and two reserves.');
+        }
+
+        $ideas = array_map(
+            fn (array $theme): array => [
+                'id' => (string) $theme['id'],
+                'topic' => (string) $theme['topic'],
+                'priority' => $theme['priority'],
+                'channels' => array_values($theme['channels']),
+                'format' => (string) $theme['format'],
+                'owner' => (string) $theme['owner'],
+                'date' => (string) $theme['date'],
+                'effort' => (int) $theme['effort'],
                 'status' => 'draft',
-                'reason' => 'Beratungsnah, visuell und kanalübergreifend sinnvoll.',
+                'reason' => (string) $theme['reason'],
             ],
-            [
-                'id' => 'IDEA-002',
-                'topic' => 'Mythos oder Fakt: Bildschirm und Augen',
-                'priority' => 'priority',
-                'channels' => ['facebook', 'instagram'],
-                'format' => 'Carousel',
-                'owner' => 'B',
-                'date' => '2026-11-25',
-                'effort' => 65,
-                'status' => 'draft',
-                'reason' => 'Beantwortet eine Alltagsfrage; fachliche Aussagen vor Freigabe prüfen.',
-            ],
-            [
-                'id' => 'IDEA-003',
-                'topic' => 'Ein Blick hinter die Kulissen der Anpassung',
-                'priority' => 'priority',
-                'channels' => ['linkedin', 'facebook'],
-                'format' => 'Photo story',
-                'owner' => 'B',
-                'date' => '2026-11-27',
-                'effort' => 70,
-                'status' => 'draft',
-                'reason' => 'Macht persönliche Beratung und Service sichtbar.',
-            ],
-            [
-                'id' => 'IDEA-004',
-                'topic' => 'Winterlicht und Sehkomfort',
-                'priority' => 'reserve',
-                'channels' => ['instagram', 'facebook'],
-                'format' => 'Story sequence',
-                'owner' => 'A',
-                'date' => '2026-11-28',
-                'effort' => 30,
-                'status' => 'draft',
-                'reason' => 'Saisonaler Anlass; bei knapper Kapazität zurückstellen.',
-            ],
-            [
-                'id' => 'IDEA-005',
-                'topic' => 'Brillenpflege im Alltag',
-                'priority' => 'reserve',
-                'channels' => ['tiktok', 'instagram'],
-                'format' => 'Short video',
-                'owner' => 'B',
-                'date' => '2026-11-29',
-                'effort' => 45,
-                'status' => 'draft',
-                'reason' => 'Evergreen-Thema und später nachproduzierbar.',
-            ],
-        ];
+            $input['themes']
+        );
 
         $capacity = [];
         $warnings = [];
@@ -138,40 +132,73 @@ final class WeeklyPlanningService
     {
         $lines = [
             'KI SOCIAL — WOCHENÜBERSICHT',
-            'Kalenderwoche: '.$plan['week'],
-            'Unternehmen: '.$plan['business'],
+            'Kalenderwoche: '.($plan['week'] ?? 'unbekannt'),
+            'Unternehmen: '.($plan['business'] ?? 'unbekannt'),
+            'Saisonaler Anlass: '.($plan['seasonal_occasion'] ?? 'nicht angegeben'),
+            'Zielgruppen: '.implode(', ', $plan['audiences'] ?? []),
+            'Ton: '.($plan['tone'] ?? 'nicht angegeben'),
             '',
             'BEITRÄGE',
         ];
 
-        foreach ($plan['ideas'] as $idea) {
+        foreach ($plan['ideas'] ?? [] as $idea) {
             $lines[] = sprintf(
-                '%s | %s | %s | %s | %s | %d min',
-                $idea['id'],
-                strtoupper($idea['priority']),
-                $idea['topic'],
-                implode(',', $idea['channels']),
-                $idea['owner'],
-                $idea['effort']
+                '%s | %s | %s | Datum: %s | Status: %s | Kanäle: %s | Format: %s | Verantwortlich: %s | Aufwand: %d min',
+                $idea['id'] ?? 'ohne ID',
+                strtoupper($idea['priority'] ?? 'unknown'),
+                $idea['topic'] ?? 'ohne Thema',
+                $idea['date'] ?? 'offen',
+                $idea['status'] ?? 'unbekannt',
+                implode(', ', $idea['channels'] ?? []),
+                $idea['format'] ?? 'nicht festgelegt',
+                $idea['owner'] ?? 'nicht zugewiesen',
+                (int) ($idea['effort'] ?? 0)
             );
+            if (!empty($idea['reason'])) {
+                $lines[] = '  Begründung: '.$idea['reason'];
+            }
         }
 
         $lines[] = '';
         $lines[] = 'KAPAZITÄT';
 
-        foreach ($plan['capacity'] as $person => $capacity) {
+        foreach ($plan['capacity'] ?? [] as $person => $capacity) {
             $lines[] = sprintf(
-                '%s: %d/%d min; remaining %d%s',
+                '%s: %d/%d min geplant; %d min verbleibend%s',
                 $person,
                 $capacity['planned_minutes'],
                 $capacity['available_minutes'],
                 $capacity['remaining_minutes'],
-                $capacity['warning'] ? ' — WARNING' : ''
+                $capacity['warning'] ? ' — WARNUNG' : ''
             );
         }
 
         $lines[] = '';
-        $lines[] = 'Inspirationsquellen sind nicht verifiziert; fehlende Kennzahlen bleiben unbekannt.';
+        $lines[] = 'WARNUNGEN';
+        foreach ($plan['warnings'] ?? [] as $warning) {
+            $lines[] = '- '.$warning;
+        }
+        if (empty($plan['warnings'])) {
+            $lines[] = '- Keine Kapazitätsüberschreitung bei den priorisierten Ideen.';
+        }
+
+        $lines[] = '';
+        $lines[] = 'INSPIRATIONEN (NICHT ALS TRENDBELEG VERIFIZIERT)';
+        foreach ($plan['inspirations'] ?? [] as $inspiration) {
+            $lines[] = sprintf(
+                '%s | %s | %s | Quelle: %s | Reichweite: %s | Engagement: %s',
+                $inspiration['channel'] ?? 'Kanal unbekannt',
+                $inspiration['topic'] ?? 'Thema unbekannt',
+                $inspiration['observed_at'] ?? 'Datum unbekannt',
+                $inspiration['source_id'] ?? 'ID unbekannt',
+                $inspiration['reach'] ?? 'unbekannt',
+                $inspiration['engagement'] ?? 'unbekannt'
+            );
+        }
+
+        $lines[] = '';
+        $lines[] = 'Hinweis: Inspirationsquellen sind keine Trendnachweise. Fehlende Kennzahlen bleiben unbekannt.';
+        $lines[] = 'Reservethemen sind nicht im fest eingeplanten Wochenaufwand enthalten.';
 
         return implode(PHP_EOL, $lines).PHP_EOL;
     }
