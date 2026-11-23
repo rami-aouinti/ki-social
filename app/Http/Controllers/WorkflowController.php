@@ -28,7 +28,11 @@ final class WorkflowController
             'assigned_person'=>'required|in:A,B',
         ]);
 
-        return response()->json(SocialPost::create($data + ['status'=>'draft','version'=>1]), 201);
+        return response()->json(
+            SocialPost::create(
+                $data + ['status'=>'draft','version'=>1]
+            ), 201
+        );
     }
 
     public function edit(Request $request, SocialPost $post): JsonResponse
@@ -50,25 +54,39 @@ final class WorkflowController
             $locked->save();
         });
 
-        return response()->json($post->refresh());
+        return response()->json(
+            $post->refresh()
+        );
     }
 
     public function submit(SocialPost $post, ApprovalService $service): JsonResponse
     {
-        try { return response()->json($service->submit($post)); }
-        catch (RuntimeException $exception) { return response()->json(['error'=>$exception->getMessage()], 422); }
+        try {
+            return response()->json($service->submit($post));
+        }
+        catch (RuntimeException $exception) {
+            return response()->json(['error'=>$exception->getMessage()], 422);
+        }
     }
 
     public function approve(Request $request, SocialPost $post, ApprovalService $service): JsonResponse
     {
         $data = $request->validate(['reviewer'=>'required|string|max:100']);
-        try { return response()->json($service->approve($post, $data['reviewer'])); }
-        catch (RuntimeException $exception) { return response()->json(['error'=>$exception->getMessage()], 422); }
+        try {
+            return response()->json($service->approve($post, $data['reviewer']));
+        }
+        catch (RuntimeException $exception) {
+            return response()->json(['error'=>$exception->getMessage()], 422);
+        }
     }
 
     public function handoff(SocialPost $post, PublishingService $service): JsonResponse
     {
-        try { return response()->json($service->handoff($post)); }
-        catch (RuntimeException $exception) { return response()->json(['error'=>$exception->getMessage()], 422); }
+        try {
+            return response()->json($service->handoff($post));
+        }
+        catch (RuntimeException $exception) {
+            return response()->json(['error'=>$exception->getMessage()], 422);
+        }
     }
 }
