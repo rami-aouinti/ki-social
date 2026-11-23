@@ -2,11 +2,14 @@
   "post_id": 1,
   "idea_id": "IDEA-001",
   "version": 1,
-  "channels": ["instagram", "linkedin"],
-  "scheduled_at": "2026-11-24T10:00:00+01:00",
-  "text": "Lass dich persönlich beraten und entdecke passende Fassungen.",
+  "channels": [
+    "instagram",
+    "linkedin"
+  ],
+  "scheduled_at": "2026-11-24T09:00:00.000Z",
+  "text": "Die richtige Fassung verbindet Sehkomfort und persönlichen Stil. Lass dich persönlich beraten.",
   "media_reference": "media/demo-reel-v1.mp4",
-  "approval_fingerprint": "<SHA-256 calculated at runtime>",
-  "idempotency_key": "<SHA-256 calculated at runtime>",
+  "approval_fingerprint": "<SHA-256 der freigegebenen Post-Version; zur Laufzeit berechnet>",
+  "idempotency_key": "<SHA-256 aus Post-ID und Approval-Fingerprint; zur Laufzeit berechnet>",
   "mode": "SIMULATED — no external publication"
 }
