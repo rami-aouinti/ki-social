@@ -123,12 +123,13 @@ curl -X POST http://localhost:8000/api/posts \
     "assigned_person":"A"
   }'
 
-# <id> durch die zurückgegebene Post-ID ersetzen:
-curl -X POST http://localhost:8000/api/posts/<id>/submit
-curl -X POST http://localhost:8000/api/posts/<id>/approve \
+# Post-ID aus der Antwort einsetzen:
+POST_ID=1
+curl -X POST "http://localhost:8000/api/posts/${POST_ID}/submit"
+curl -X POST "http://localhost:8000/api/posts/${POST_ID}/approve" \
   -H 'Content-Type: application/json' \
   -d '{"reviewer":"Demo Reviewer"}'
-curl -X POST http://localhost:8000/api/posts/<id>/handoff
+curl -X POST "http://localhost:8000/api/posts/${POST_ID}/handoff"
 ```
 
 Die Übergabe erzeugt lokal `storage/app/publishing/handoff-{id}.json`. Das Payload-Beispiel steht unter [examples/handoff-payload.sample.json](examples/handoff-payload.sample.json).
@@ -159,7 +160,7 @@ Die Tests prüfen insbesondere:
 - ein vom Gateway abgelehnter Handoff wird nicht als erfolgreich gespeichert;
 - der Plan übernimmt Themen aus der strukturierten Eingabe und macht Budgetüberschreitungen sichtbar.
 
-Die Testmatrix und der Platz für die tatsächlichen lokalen Testergebnisse stehen in [examples/test-evidence.md](examples/test-evidence.md). CI-Status: [GitHub Actions](https://github.com/rami-aouinti/ki-social/actions).
+Die Testmatrix und die dokumentierten lokalen Testergebnisse stehen in [examples/test-evidence.md](examples/test-evidence.md). CI-Status: [GitHub Actions](https://github.com/rami-aouinti/ki-social/actions).
 
 ## Implementiert, simuliert und bewusst ausgeschlossen
 
@@ -189,4 +190,4 @@ Die Testmatrix und der Platz für die tatsächlichen lokalen Testergebnisse steh
 
 ChatGPT wurde zur Strukturierung der Anforderungen, für Architekturüberlegungen, Codeentwürfe und Review-Checklisten verwendet. Der KI-Provider innerhalb der Anwendung ist ein deterministischer Fake und führt keine externen KI-Requests aus.
 
-**Tatsächliche Bearbeitungszeit:** Bitte vor der Abgabe selbst anhand deiner tatsächlich aufgewendeten Zeit eintragen. Dieser Wert wird nicht geschätzt oder erfunden.
+**Tatsächliche Bearbeitungszeit:** Nicht separat erfasst; deshalb wird keine Zeitangabe geschätzt oder behauptet.
