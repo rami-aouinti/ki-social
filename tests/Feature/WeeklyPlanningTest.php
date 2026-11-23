@@ -24,6 +24,16 @@ class WeeklyPlanningTest extends TestCase
         $this->assertSame('unverified', $plan['inspirations'][0]['trend_status']);
     }
 
+    public function test_topics_are_taken_from_the_structured_input(): void
+    {
+        $input = json_decode(file_get_contents(base_path('data/weekly-input.json')), true);
+        $input['themes'][0]['topic'] = 'A topic supplied by the input';
+
+        $plan = app(WeeklyPlanningService::class)->generate($input);
+
+        $this->assertSame('A topic supplied by the input', $plan['ideas'][0]['topic']);
+    }
+
     public function test_text_report_contains_schedule_status_sources_and_capacity_warnings(): void
     {
         $input = json_decode(file_get_contents(base_path('data/weekly-input.json')), true);
