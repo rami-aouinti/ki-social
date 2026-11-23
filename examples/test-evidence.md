@@ -1,6 +1,6 @@
 # Test evidence
 
-This file documents the automated acceptance scenarios and how to reproduce them. It does not replace the actual test output from the final submission environment.
+This file records the automated acceptance scenarios and the local test run reported for the submitted application code. The local result is evidence for that run, not a claim that GitHub Actions passed on the final documentation-only commit.
 
 ## Automated scenarios
 
@@ -11,10 +11,17 @@ This file documents the automated acceptance scenarios and how to reproduce them
 | Missing media blocks review | test_missing_media_reference_blocks_submission_for_review | Exact validation error; post stays draft; no approvals or handoffs. |
 | Changed text requires new approval | test_text_change_after_approval_requires_new_approval | Old approval is stale; no handoff is created. |
 | Gateway rejection is not success | test_rejected_gateway_does_not_mark_post_as_handed_over | RuntimeException; post remains approved; no handoff row. |
-| Capacity overrun is visible | test_plan_has_three_priorities_two_reserves_and_capacity_warning | B remains at 100 available minutes; 135 planned minutes; warning and 35-minute overrun. |\n| Topics come from structured input | test_topics_are_taken_from_the_structured_input | Changing the first input topic changes the generated idea topic. |
+| Capacity overrun is visible | test_plan_has_three_priorities_two_reserves_and_capacity_warning | B remains at 100 available minutes; 135 planned minutes; warning and 35-minute overrun. |
+| Topics come from structured input | test_topics_are_taken_from_the_structured_input | Changing the first input topic changes the generated idea topic. |
 | Text report is useful for weekly review | test_text_report_contains_schedule_status_sources_and_capacity_warnings | Report contains date, status, source ID, inspiration disclaimer and reserve assumption. |
 
-## Run locally
+## Reproduce locally
+
+Docker:
+
+    docker compose exec app php artisan test
+
+Without Docker:
 
     composer validate --no-check-publish
     composer install
@@ -24,14 +31,20 @@ This file documents the automated acceptance scenarios and how to reproduce them
     php artisan migrate --force
     php artisan test
 
-## Final submission evidence
+## Recorded local result
 
-After running the commands above on the final commit, paste the real terminal summary here or attach a screenshot. Do not mark tests as passed based only on the existence of test methods.
+The following result was observed in the local Docker environment and reported from the terminal:
 
-- Commit tested: fill in after final run.
-- PHP version: fill in from php -v.
-- Test command: php artisan test.
-- Actual result: fill in with the real PHPUnit summary.
-- CI run for the final pull request: add the GitHub Actions URL after it completes.
+- Application code commit: `0d8be0e60ca718780c7bc2decf3b451a00fd90be` (merge commit on `main`).
+- PHP version: `8.4.28`.
+- Test command: `docker compose exec app php artisan test`.
+- Result: **8 tests passed, 30 assertions**.
+- Duration: **21.01 seconds**.
 
-The repository had a successful CI run on the earlier main-branch commit e87734f. That historical run is not evidence for the changes in this branch.
+The local run output showed both `WeeklyPlanningTest` (3 tests) and `WorkflowTest` (5 tests) passing.
+
+## CI status
+
+GitHub Actions: https://github.com/rami-aouinti/ki-social/actions
+
+A successful CI run for the final merge commit was not independently confirmed when this evidence file was updated. Check the Actions page for the authoritative workflow result; the local PHPUnit result above is separate from CI.
