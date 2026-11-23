@@ -1,13 +1,98 @@
 {
-  "week":"2026-W48",
-  "business":"Optiker Lichtblick (fiktiv)",
-  "seasonal_occasion":"Beginn der Winter- und Weihnachtszeit",
-  "audiences":["Brillenträgerinnen und Brillenträger","Menschen auf der Suche nach einer neuen Fassung","Berufstätige mit Bildschirmarbeitsplatz"],
-  "tone":"persönlich, freundlich, kompetent",
-  "people":{"A":90,"B":150},
-  "inspirations":[
-    {"channel":"instagram","source_id":"SRC-IG-001","topic":"Brillenformen und persönlicher Stil","observed_at":"2026-11-18","reach":null,"engagement":null},
-    {"channel":"tiktok","source_id":"SRC-TT-002","topic":"Kurze Behind-the-scenes-Sequenzen","observed_at":"2026-11-19","reach":null,"engagement":null},
-    {"channel":"linkedin","source_id":"SRC-LI-003","topic":"Individuelle Beratung und Servicequalität","observed_at":"2026-11-19","reach":null,"engagement":null}
+  "week": "2026-W48",
+  "business": "Optiker Lichtblick (fiktiv)",
+  "seasonal_occasion": "Beginn der Winter- und Weihnachtszeit",
+  "audiences": [
+    "Brillenträgerinnen und Brillenträger",
+    "Menschen auf der Suche nach einer neuen Fassung",
+    "Berufstätige mit Bildschirmarbeitsplatz"
+  ],
+  "tone": "persönlich, freundlich, kompetent",
+  "people": {
+    "A": 90,
+    "B": 150
+  },
+  "themes": [
+    {
+      "id": "IDEA-001",
+      "topic": "Welche Brillenform passt zu deinem Gesicht?",
+      "priority": "priority",
+      "channels": ["instagram", "linkedin"],
+      "format": "Short video + professional post",
+      "owner": "A",
+      "date": "2026-11-24",
+      "effort": 55,
+      "reason": "Beratungsnah, visuell und kanalübergreifend sinnvoll."
+    },
+    {
+      "id": "IDEA-002",
+      "topic": "Mythos oder Fakt: Bildschirm und Augen",
+      "priority": "priority",
+      "channels": ["facebook", "instagram"],
+      "format": "Carousel",
+      "owner": "B",
+      "date": "2026-11-25",
+      "effort": 65,
+      "reason": "Beantwortet eine Alltagsfrage; fachliche Aussagen vor Freigabe prüfen."
+    },
+    {
+      "id": "IDEA-003",
+      "topic": "Ein Blick hinter die Kulissen der Anpassung",
+      "priority": "priority",
+      "channels": ["linkedin", "facebook"],
+      "format": "Photo story",
+      "owner": "B",
+      "date": "2026-11-27",
+      "effort": 70,
+      "reason": "Macht persönliche Beratung und Service sichtbar."
+    },
+    {
+      "id": "IDEA-004",
+      "topic": "Winterlicht und Sehkomfort",
+      "priority": "reserve",
+      "channels": ["instagram", "facebook"],
+      "format": "Story sequence",
+      "owner": "A",
+      "date": "2026-11-28",
+      "effort": 30,
+      "reason": "Saisonaler Anlass; bei knapper Kapazität zurückstellen."
+    },
+    {
+      "id": "IDEA-005",
+      "topic": "Brillenpflege im Alltag",
+      "priority": "reserve",
+      "channels": ["tiktok", "instagram"],
+      "format": "Short video",
+      "owner": "B",
+      "date": "2026-11-29",
+      "effort": 45,
+      "reason": "Evergreen-Thema und später nachproduzierbar."
+    }
+  ],
+  "inspirations": [
+    {
+      "channel": "instagram",
+      "source_id": "SRC-IG-001",
+      "topic": "Brillenformen und persönlicher Stil",
+      "observed_at": "2026-11-18",
+      "reach": null,
+      "engagement": null
+    },
+    {
+      "channel": "tiktok",
+      "source_id": "SRC-TT-002",
+      "topic": "Kurze Behind-the-scenes-Sequenzen",
+      "observed_at": "2026-11-19",
+      "reach": null,
+      "engagement": null
+    },
+    {
+      "channel": "linkedin",
+      "source_id": "SRC-LI-003",
+      "topic": "Individuelle Beratung und Servicequalität",
+      "observed_at": "2026-11-19",
+      "reach": null,
+      "engagement": null
+    }
   ]
 }
