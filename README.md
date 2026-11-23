@@ -78,7 +78,7 @@ Die Übergabe speichert ausschließlich lokales JSON. Es gibt keine Instagram-, 
 
 Die synthetischen Eingaben enthalten 90 Minuten für A und 150 Minuten für B. Aufwand umfasst Produktion, Varianten, Abstimmung und Freigabe. Nur die drei priorisierten Ideen belasten zunächst das feste Wochenbudget; zwei Reserven bleiben unverplant. Ein negatives Restbudget erzeugt eine Warnung. Verfügbare Zeit wird nie automatisch erhöht.
 
-Bewusste Prototyp-Grenze: Die fünf Ideen, ihre Zuordnung, Termine und Aufwände sind derzeit deterministische Beispieldaten im WeeklyPlanningService. Die Eingabedatei liefert Kontext, Zielgruppen, Tonalität, Kapazitäten und Inspirationsquellen; sie steuert die Themenauswahl noch nicht dynamisch. Inspirationsquellen sind keine Trendnachweise. Für den begrenzten Prototyp ist die feste, reproduzierbare Planung transparent; als nächster Schritt könnte die Ideenliste aus validierten Eingabedaten oder einem austauschbaren Planungs-Provider kommen.
+Die fünf Themen, Prioritäten, Kanäle, Formate, Verantwortlichen, Termine, Aufwände und Begründungen stehen als strukturierte Daten in data/weekly-input.json. WeeklyPlanningService validiert die fünf Einträge (drei Prioritäten, zwei Reserven), übernimmt sie in den Plan und berechnet die Kapazität daraus. Damit ist die Auswahl deterministisch und konfigurierbar, aber noch keine automatische KI-Rangfolge. Inspirationsquellen sind Kontext und keine Trendnachweise.
 
 ## Tests
 
@@ -91,7 +91,7 @@ Abgedeckt werden:
 - fehlende Medienreferenz verhindert bereits die Einreichung zur Prüfung;
 - Textänderung nach Freigabe entwertet die alte Freigabe;
 - abgelehnte Übergabe durch das Gateway wird nicht als erfolgreich gespeichert;
-- Wochenplan enthält drei Prioritäten und zwei Reserven; Budgetüberschreitung wird sichtbar;
+- Wochenplan übernimmt die Themen aus der Eingabedatei, enthält drei Prioritäten und zwei Reserven; Budgetüberschreitung wird sichtbar;
 - Textbericht enthält Termine, Status, Begründungen, Quellen und Kapazitätshinweise;
 - fehlende Inspirationskennzahlen bleiben unbekannt, Quellen sind als unbestätigt markiert.
 
